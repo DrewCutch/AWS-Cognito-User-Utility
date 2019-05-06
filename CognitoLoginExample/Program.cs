@@ -45,13 +45,11 @@ namespace CognitoLoginExample
         {
             while(true)
             {
+                Console.WriteLine("Enter your credentials");
+                string username = Prompt("Username");
+                string password = Prompt("Password");
                 try
                 {
-                    Console.WriteLine("Enter your credentials");
-                    Console.Write("Username: ");
-                    string username = Console.ReadLine();
-                    Console.Write("Password: ");
-                    string password = Console.ReadLine();
                     Task<string> signInTask = AccountUtils.GetCredsAsync(username, password);
                     signInTask.Wait();
                     string idToken = signInTask.Result;
@@ -72,6 +70,9 @@ namespace CognitoLoginExample
                             case NotAuthorizedException _:
                                 PrintError("Incorrect password!");
                                 break;
+                            case UserNotConfirmedException _:
+                                PrintError("User is not confirmed!");
+                                break;
                             default:
                                 throw innerException;
                         }
@@ -86,23 +87,26 @@ namespace CognitoLoginExample
 
         private static void CreateAccount()
         {
-            /*
+            
             Console.WriteLine("Enter Fields:");
-            string birthdate = Prompt("Birthdate");
-            string churchUsername = Prompt("Church Username");
+            string username = Prompt("Username");
+            string password = Prompt("Password");
             string email = Prompt("Email");
             string firstName = Prompt("First Name");
-            */
+            string lastName = Prompt("Last Name");
+            string birthdate = Prompt("Birthdate");
+            string churchUsername = Prompt("Church Username");
+
             TogetherUser newUser = new TogetherUser
             {
-                BirthDate = "1999-08-18",
-                ChurchUsername = "NPCChurch3",
-                Email = "drew.cutch@gmail.com",
-                FirstName = "Andrew",
-                LastName = "Cutchins",
-                Password = "Test1234",
+                BirthDate = birthdate,
+                ChurchUsername = churchUsername,
+                Email = email,
+                FirstName = firstName,
+                LastName = lastName,
+                Password = password,
                 Status = new UserStatusType("test"),
-                Username = "DrewCutch"
+                Username = username
             };
             Task signUpTask = AccountUtils.CreateAsync(newUser);
             signUpTask.Wait();
